@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caesar Cipher Disk</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .disk-container {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin: 30px auto;
+      background: #d2b48c;
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px #555;
+      border: 4px solid #a29077;
+    }
+    .ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+    }
+    .letter {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      font-weight: bold;
+      line-height: 24px;
+      border-radius: 2px;
+      font-family: monospace;
+    }
+    .outer-letter {
+      background-color: #6b5b4d;
+      color: #fff;
+      border: 1px solid #4a3f35;
+    }
+    .inner-letter {
+      background-color: #f5deb3;
+      color: #000;
+      border: 1px solid #aaa;
+    }
+    #innerRing {
+      transform-origin: center center;
+      transition: transform 0.3s ease;
+    }
+    #output {
+      position: relative;
+      top: 30px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #shiftControls {
+      margin-top: 10px;
+    }
+    #shiftControls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Caesar Cipher Disk</h1>
+
+  <textarea id="inputText" rows="2" cols="40" placeholder="Enter text..."></textarea><br />
+
+  <div id="shiftControls">
+    <label for="shift">Shift:
+      <input type="number" id="shiftNumber" min="0" max="25" value="0" />
+    </label><br />
+    <input type="range" id="shift" min="0" max="25" value="0" />
+  </div>
+
+  <label>
+    <input type="radio" name="mode" value="encrypt" checked /> Encrypt
+  </label>
+  <label>
+    <input type="radio" name="mode" value="decrypt" /> Decrypt
+  </label><br />
+
+  <div class="disk-container">
+    <div class="ring" id="outerRing"></div>
+    <div class="ring" id="innerRing"></div>
+  </div>
+
+  <div id="output"><strong>Result:</strong></div>
+
+  <script>
+    const alphabet = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+    const outerRing = document.getElementById("outerRing");
+    const innerRing = document.getElementById("innerRing");
+    const inputText = document.getElementById("inputText");
+    const shiftSlider = document.getElementById("shift");
+    const shiftNumber = document.getElementById("shiftNumber");
+    const output = document.getElementById("output");
+
+    function createRing(container, isInner = false) {
+      container.innerHTML = "";
+      const len = alphabet.length;
+      const radius = isInner ? 95 : 135;
+      alphabet.forEach((char, i) => {
+        const angle = (360 / len) * i;
+        const x = 160 + radius * Math.cos((angle - 90) * Math.PI / 180);
+        const y = 160 + radius * Math.sin((angle - 90) * Math.PI / 180);
+
+        const el = document.createElement("div");
+        el.className = `letter ${isInner ? 'inner-letter' : 'outer-letter'}`;
+        el.style.left = `${x - 12}px`;
+        el.style.top = `${y - 12}px`;
+
+        if (isInner) {
+          el.style.transform = `rotate(${-angle}deg)`;
+        }
+
+        el.innerText = char;
+        container.appendChild(el);
+      });
+    }
+
+    function caesarCipher(text, shift, decrypt = false) {
+      return text.toUpperCase().replace(/[A-Z]/g, c => {
+        const index = alphabet.indexOf(c);
+        if (index === -1) return c;
+        const offset = decrypt ? (index - shift + 26) % 26 : (index + shift) % 26;
+        return alphabet[offset];
+      });
+    }
+
+    function update() {
+      const shift = parseInt(shiftSlider.value);
+      shiftNumber.value = shift;
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const isDecrypt = mode === "decrypt";
+      const angle = (360 / 26) * shift * (isDecrypt ? 1 : -1);
+      innerRing.style.transform = `rotate(${angle}deg)`;
+      const result = caesarCipher(inputText.value, shift, isDecrypt);
+      output.innerHTML = `<strong>Result:</strong> ${result}`;
+    }
+
+    shiftSlider.addEventListener("input", () => {
+      shiftNumber.value = shiftSlider.value;
+      update();
+    });
+
+    shiftNumber.addEventListener("input", () => {
+      const value = Math.min(25, Math.max(0, parseInt(shiftNumber.value) || 0));
+      shiftSlider.value = value;
+      update();
+    });
+
+    inputText.addEventListener("input", update);
+    document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", update));
+
+    createRing(outerRing);
+    createRing(innerRing, true);
+    update();
+  </script>
+</body>
+</html>
