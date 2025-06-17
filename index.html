@@ -28,11 +28,21 @@
         Decrypt
       </label>
     </div>
+
+    <div class="correspondence-toggle">
+      <label for="showLines">Show correspondence lines:</label>
+      <div class="toggle-switch" id="toggleSwitch">
+        <div class="toggle-slider"></div>
+      </div>
+    </div>
   </div>
 
   <div class="disk-container">
     <div class="outer-ring-bg"></div>
     <div class="inner-ring-bg"></div>
+    <svg class="correspondence-lines hidden" id="correspondenceLines" viewBox="0 0 400 400">
+      <!-- Lines will be drawn here -->
+    </svg>
     <div class="ring" id="outerRing"></div>
     <div class="ring" id="innerRing"></div>
     <div class="center-circle"></div>
@@ -51,6 +61,9 @@
     const shiftSlider = document.getElementById("shift");
     const shiftNumber = document.getElementById("shiftNumber");
     const output = document.getElementById("output");
+    const correspondenceLines = document.getElementById("correspondenceLines");
+    const toggleSwitch = document.getElementById("toggleSwitch");
+    let showLines = false;
 
     function createRing(container, isInner = false) {
       container.innerHTML = "";
@@ -89,6 +102,55 @@
       });
     }
 
+    function drawCorrespondenceLines() {
+      correspondenceLines.innerHTML = "";
+      if (!showLines) return;
+      
+      const shift = parseInt(shiftSlider.value);
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const isDecrypt = mode === "decrypt";
+      const outerRadius = 170;
+      const innerRadius = 120;
+      const centerX = 200;
+      const centerY = 200;
+      
+      // Inner ring rotation angle (same as in update function)
+      const ringRotationAngle = (360 / 26) * shift * (isDecrypt ? 1 : -1);
+      
+      alphabet.forEach((char, i) => {
+        // Outer ring position (plaintext - fixed)
+        const outerAngle = (360 / 26) * i - 90;
+        const outerX = centerX + outerRadius * Math.cos(outerAngle * Math.PI / 180);
+        const outerY = centerY + outerRadius * Math.sin(outerAngle * Math.PI / 180);
+        
+        // Inner ring position - the physical position of the corresponding letter
+        // Find which inner letter corresponds to this outer letter
+        const targetIndex = isDecrypt ? (i - shift + 26) % 26 : (i + shift) % 26;
+        // But the inner ring is rotated, so we need the original position of that letter
+        const innerAngle = (360 / 26) * targetIndex - 90 + ringRotationAngle;
+        const innerX = centerX + innerRadius * Math.cos(innerAngle * Math.PI / 180);
+        const innerY = centerY + innerRadius * Math.sin(innerAngle * Math.PI / 180);
+        
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", outerX);
+        line.setAttribute("y1", outerY);
+        line.setAttribute("x2", innerX);
+        line.setAttribute("y2", innerY);
+        line.setAttribute("stroke", "#e74c3c");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("opacity", "0.7");
+        
+        correspondenceLines.appendChild(line);
+      });
+    }
+
+    function toggleLines() {
+      showLines = !showLines;
+      toggleSwitch.classList.toggle('active', showLines);
+      correspondenceLines.classList.toggle('hidden', !showLines);
+      drawCorrespondenceLines();
+    }
+
     function update() {
       const shift = parseInt(shiftSlider.value);
       shiftNumber.value = shift;
@@ -110,6 +172,8 @@
       } else {
         output.textContent = "Enter text above to see the result";
       }
+      
+      drawCorrespondenceLines();
     }
 
     // Event listeners
@@ -129,6 +193,8 @@
     document.querySelectorAll('input[name="mode"]').forEach(r => 
       r.addEventListener("change", update)
     );
+    
+    toggleSwitch.addEventListener("click", toggleLines);
 
     // Initialize
     createRing(outerRing);

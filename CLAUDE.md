@@ -8,8 +8,9 @@ This is a single-file interactive Caesar cipher educational tool built with vani
 
 ## Architecture
 
-**Single File Structure:**
-- `index.html` - Complete application containing HTML structure, CSS styles, and JavaScript logic
+**File Structure:**
+- `index.html` - HTML structure and JavaScript logic
+- `style.css` - Separated CSS styles for the application
 - `README.md` - Comprehensive documentation in Japanese
 - `LICENSE` - MIT license file
 
