@@ -7,6 +7,18 @@
 
 円盤の回転により、平文と暗号文の対応関係が一目で分かる教育的なツールとなっています。
 
+## デモページ
+
+👉 [https://ipusiron.github.io/caesar-cipher-wheel/](https://ipusiron.github.io/caesar-cipher-wheel/)
+
+---
+
+## サンプル画面
+
+> 以下は実際の画面例です（GitHub Pages上の表示例）  
+>
+> ![シーザー暗号円盤ツールのスクリーンショット](sample.png)
+
 ## 機能
 
 - **リアルタイム暗号化/復号**: テキストを入力すると即座に結果が表示されます
