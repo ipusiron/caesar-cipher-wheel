@@ -395,16 +395,6 @@
     createRing(outerRing);
     createRing(innerRing, true);
     update();
-
-    // Add animation on load
-    setTimeout(() => {
-      shiftSlider.value = 3;
-      update();
-      setTimeout(() => {
-        shiftSlider.value = 0;
-        update();
-      }, 1000);
-    }, 500);
   </script>
 </body>
 </html>
