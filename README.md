@@ -1,4 +1,4 @@
-# シーザー暗号円盤ツール（Caesar Wheel Tool）
+# シーザー暗号円盤ツール（Caesar Cipher Wheel Tool）
 
 **Day 3 - セキュリティツールをAIで作ってみよう 100日チャレンジ**
 
