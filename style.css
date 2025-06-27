@@ -1,3 +1,39 @@
+:root {
+  --primary-color: #3498db;
+  --text-color: #2c3e50;
+  --bg-gradient-start: #f5f7fa;
+  --bg-gradient-end: #c3cfe2;
+  --panel-bg: white;
+  --panel-shadow: rgba(0, 0, 0, 0.1);
+  --input-border: #e0e0e0;
+  --input-bg: white;
+  --slider-bg: #e0e0e0;
+  --outer-ring-bg: #95a5a6;
+  --inner-ring-bg: #e8d5b7;
+  --outer-letter-color: #ffffff;
+  --inner-letter-color: #2c3e50;
+  --output-bg: #f8f9fa;
+  --label-color: #555;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --text-color: #e4e4e7;
+  --bg-gradient-start: #0f0f10;
+  --bg-gradient-end: #1a1a2e;
+  --panel-bg: #18181b;
+  --panel-shadow: rgba(0, 0, 0, 0.3);
+  --input-border: #3f3f46;
+  --input-bg: #27272a;
+  --slider-bg: #3f3f46;
+  --outer-ring-bg: #52525b;
+  --inner-ring-bg: #6366f1;
+  --outer-letter-color: #e4e4e7;
+  --inner-letter-color: #fafafa;
+  --output-bg: #27272a;
+  --label-color: #a1a1aa;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,26 +42,27 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  transition: background 0.3s ease;
 }
 
 h1 {
-  color: #2c3e50;
+  color: var(--text-color);
   font-size: 2.5rem;
   margin-bottom: 30px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 2px 2px 4px var(--panel-shadow);
 }
 
 .control-panel {
-  background: white;
+  background: var(--panel-bg);
   padding: 25px;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px var(--panel-shadow);
   margin-bottom: 30px;
   max-width: 500px;
   width: 100%;
@@ -34,17 +71,19 @@ h1 {
 textarea {
   width: 100%;
   padding: 12px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--input-border);
   border-radius: 8px;
   font-size: 16px;
   resize: vertical;
   transition: border-color 0.3s;
   font-family: inherit;
+  background: var(--input-bg);
+  color: var(--text-color);
 }
 
 textarea:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--primary-color);
 }
 
 .shift-controls {
@@ -56,22 +95,24 @@ textarea:focus {
 
 .shift-label {
   font-weight: 600;
-  color: #555;
+  color: var(--label-color);
 }
 
 #shiftNumber {
   width: 60px;
   padding: 8px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--input-border);
   border-radius: 6px;
   font-size: 16px;
   text-align: center;
+  background: var(--input-bg);
+  color: var(--text-color);
 }
 
 #shift {
   flex: 1;
   height: 6px;
-  background: #e0e0e0;
+  background: var(--slider-bg);
   outline: none;
   border-radius: 3px;
   -webkit-appearance: none;
@@ -82,19 +123,19 @@ textarea:focus {
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #3498db;
+  background: var(--primary-color);
   cursor: pointer;
   border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px var(--panel-shadow);
 }
 
 #shift::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: #3498db;
+  background: var(--primary-color);
   cursor: pointer;
   border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px var(--panel-shadow);
 }
 
 .mode-controls {
@@ -109,7 +150,7 @@ textarea:focus {
   gap: 8px;
   cursor: pointer;
   font-weight: 500;
-  color: #555;
+  color: var(--label-color);
 }
 
 .mode-controls input[type="radio"] {
@@ -123,9 +164,9 @@ textarea:focus {
   width: 400px;
   height: 400px;
   margin: 0 auto;
-  background: white;
+  background: var(--panel-bg);
   border-radius: 50%;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px var(--panel-shadow);
 }
 
 .ring {
@@ -141,9 +182,9 @@ textarea:focus {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #95a5a6;
+  background: var(--outer-ring-bg);
   border-radius: 50%;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 20px var(--panel-shadow);
 }
 
 .inner-ring-bg {
@@ -153,9 +194,9 @@ textarea:focus {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #e8d5b7;
+  background: var(--inner-ring-bg);
   border-radius: 50%;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px var(--panel-shadow);
 }
 
 .center-circle {
@@ -165,9 +206,9 @@ textarea:focus {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: var(--panel-bg);
   border-radius: 50%;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 5px var(--panel-shadow);
   z-index: 10;
 }
 
@@ -184,12 +225,12 @@ textarea:focus {
 }
 
 .outer-letter {
-  color: #ffffff;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  color: var(--outer-letter-color);
+  text-shadow: 1px 1px 2px var(--panel-shadow);
 }
 
 .inner-letter {
-  color: #2c3e50;
+  color: var(--inner-letter-color);
   font-weight: 600;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -200,10 +241,10 @@ textarea:focus {
 }
 
 .output-panel {
-  background: white;
+  background: var(--panel-bg);
   padding: 25px;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px var(--panel-shadow);
   margin-top: 30px;
   max-width: 500px;
   width: 100%;
@@ -212,18 +253,18 @@ textarea:focus {
 
 #output {
   font-size: 1.2rem;
-  color: #2c3e50;
+  color: var(--text-color);
   word-break: break-all;
   min-height: 30px;
   padding: 10px;
-  background: #f8f9fa;
+  background: var(--output-bg);
   border-radius: 8px;
   font-family: 'Courier New', monospace;
 }
 
 .output-label {
   font-weight: 600;
-  color: #555;
+  color: var(--label-color);
   margin-bottom: 10px;
   display: block;
 }
@@ -262,7 +303,7 @@ textarea:focus {
 
 .correspondence-toggle label {
   font-weight: 500;
-  color: #555;
+  color: var(--label-color);
   cursor: pointer;
 }
 
@@ -270,14 +311,14 @@ textarea:focus {
   position: relative;
   width: 50px;
   height: 24px;
-  background: #e0e0e0;
+  background: var(--slider-bg);
   border-radius: 12px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
 .toggle-switch.active {
-  background: #3498db;
+  background: var(--primary-color);
 }
 
 .toggle-slider {
@@ -286,14 +327,50 @@ textarea:focus {
   left: 2px;
   width: 20px;
   height: 20px;
-  background: white;
+  background: var(--panel-bg);
   border-radius: 50%;
   transition: transform 0.3s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px var(--panel-shadow);
 }
 
 .toggle-switch.active .toggle-slider {
   transform: translateX(26px);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.theme-button {
+  background: var(--panel-bg);
+  border: 2px solid var(--input-border);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px var(--panel-shadow);
+  transition: all 0.3s ease;
+}
+
+.theme-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px var(--panel-shadow);
+}
+
+.theme-icon {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.theme-button:hover .theme-icon {
+  transform: rotate(20deg);
 }
 
 /* Responsive design */
