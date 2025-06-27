@@ -251,12 +251,18 @@ textarea:focus {
   text-align: center;
 }
 
+.output-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
 #output {
   font-size: 1.2rem;
   color: var(--text-color);
   word-break: break-all;
   min-height: 30px;
-  padding: 10px;
+  padding: 10px 50px 10px 10px;
   background: var(--output-bg);
   border-radius: 8px;
   font-family: 'Courier New', monospace;
@@ -267,6 +273,40 @@ textarea:focus {
   color: var(--label-color);
   margin-bottom: 10px;
   display: block;
+}
+
+.copy-button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px var(--panel-shadow);
+}
+
+.copy-button:hover {
+  background: var(--primary-color);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 8px var(--panel-shadow);
+}
+
+.copy-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.copy-button.success {
+  background: #27ae60;
+}
+
+.copy-icon {
+  font-size: 16px;
+  display: inline-block;
+  transition: transform 0.3s ease;
 }
 
 /* Hover effects */

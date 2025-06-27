@@ -19,7 +19,8 @@ const elements = {
   correspondenceLines: null,
   toggleSwitch: null,
   themeToggle: null,
-  themeIcon: null
+  themeIcon: null,
+  copyButton: null
 };
 
 // State
@@ -40,6 +41,7 @@ function initializeElements() {
   elements.toggleSwitch = document.getElementById('toggleSwitch');
   elements.themeToggle = document.getElementById('themeToggle');
   elements.themeIcon = elements.themeToggle.querySelector('.theme-icon');
+  elements.copyButton = document.getElementById('copyButton');
 }
 
 // Cipher functionality
@@ -144,6 +146,56 @@ function update() {
   drawCorrespondenceLines();
 }
 
+// Copy functionality
+async function copyToClipboard() {
+  const outputText = elements.output.textContent;
+  
+  if (!outputText || outputText === 'Enter text above to see the result') {
+    return;
+  }
+  
+  try {
+    await navigator.clipboard.writeText(outputText);
+    
+    // Visual feedback
+    const originalIcon = elements.copyButton.querySelector('.copy-icon').textContent;
+    elements.copyButton.querySelector('.copy-icon').textContent = '✓';
+    elements.copyButton.classList.add('success');
+    
+    setTimeout(() => {
+      elements.copyButton.querySelector('.copy-icon').textContent = originalIcon;
+      elements.copyButton.classList.remove('success');
+    }, 2000);
+  } catch (err) {
+    console.error('Failed to copy text:', err);
+    
+    // Fallback for older browsers
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = outputText;
+    tempTextArea.style.position = 'fixed';
+    tempTextArea.style.left = '-9999px';
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    
+    try {
+      document.execCommand('copy');
+      // Visual feedback for fallback
+      const originalIcon = elements.copyButton.querySelector('.copy-icon').textContent;
+      elements.copyButton.querySelector('.copy-icon').textContent = '✓';
+      elements.copyButton.classList.add('success');
+      
+      setTimeout(() => {
+        elements.copyButton.querySelector('.copy-icon').textContent = originalIcon;
+        elements.copyButton.classList.remove('success');
+      }, 2000);
+    } catch (fallbackErr) {
+      console.error('Fallback copy failed:', fallbackErr);
+    }
+    
+    document.body.removeChild(tempTextArea);
+  }
+}
+
 // Theme management
 const themeManager = {
   setTheme(theme) {
@@ -202,6 +254,7 @@ function setupEventListeners() {
   
   elements.toggleSwitch.addEventListener('click', toggleLines);
   elements.themeToggle.addEventListener('click', () => themeManager.toggleTheme());
+  elements.copyButton.addEventListener('click', copyToClipboard);
 }
 
 // Initialize application
