@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"(New-Object Media.SoundPlayer 'C:\\\\Users\\\\owner\\\\OneDrive\\\\Documents\\\\claude\\\\marisa_owattaze.wav').PlaySync()\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -8,6 +8,48 @@ const CONFIG = {
   LETTER_SIZE: 32
 };
 
+// Dynamic configuration based on container size
+function getResponsiveConfig() {
+  const container = elements.outerRing?.parentElement;
+  if (!container) return CONFIG;
+  
+  const containerWidth = container.offsetWidth;
+  
+  // Different configurations for various screen sizes
+  let innerRadius, outerRadius, letterSize;
+  
+  if (containerWidth <= 280) {
+    // Very small screens (280px)
+    innerRadius = 84;
+    outerRadius = 119;
+    letterSize = 22;
+  } else if (containerWidth <= 300) {
+    // Small screens (300px)
+    innerRadius = 90;
+    outerRadius = 127;
+    letterSize = 24;
+  } else if (containerWidth <= 320) {
+    // Medium-small screens (320px)
+    innerRadius = 96;
+    outerRadius = 136;
+    letterSize = 24;
+  } else {
+    // Default (400px)
+    innerRadius = 120;
+    outerRadius = 170;
+    letterSize = 32;
+  }
+  
+  return {
+    ALPHABET: CONFIG.ALPHABET,
+    INNER_RADIUS: innerRadius,
+    OUTER_RADIUS: outerRadius,
+    CENTER_X: containerWidth / 2,
+    CENTER_Y: containerWidth / 2,
+    LETTER_SIZE: letterSize
+  };
+}
+
 // DOM Elements
 const elements = {
   outerRing: null,
@@ -57,18 +99,23 @@ function caesarCipher(text, shift, decrypt = false) {
 // Ring creation
 function createRing(container, isInner = false) {
   container.innerHTML = '';
-  const radius = isInner ? CONFIG.INNER_RADIUS : CONFIG.OUTER_RADIUS;
+  const config = getResponsiveConfig();
+  const radius = isInner ? config.INNER_RADIUS : config.OUTER_RADIUS;
   
   state.alphabet.forEach((char, i) => {
     const angle = (360 / state.alphabet.length) * i;
     const angleRad = (angle - 90) * Math.PI / 180;
-    const x = CONFIG.CENTER_X + radius * Math.cos(angleRad);
-    const y = CONFIG.CENTER_Y + radius * Math.sin(angleRad);
+    const x = config.CENTER_X + radius * Math.cos(angleRad);
+    const y = config.CENTER_Y + radius * Math.sin(angleRad);
     
     const el = document.createElement('div');
     el.className = `letter ${isInner ? 'inner-letter' : 'outer-letter'}`;
-    el.style.left = `${x - CONFIG.LETTER_SIZE / 2}px`;
-    el.style.top = `${y - CONFIG.LETTER_SIZE / 2}px`;
+    el.style.left = `${x - config.LETTER_SIZE / 2}px`;
+    el.style.top = `${y - config.LETTER_SIZE / 2}px`;
+    el.style.fontSize = `${config.LETTER_SIZE * 0.56}px`; // Dynamic font size
+    el.style.width = `${config.LETTER_SIZE}px`;
+    el.style.height = `${config.LETTER_SIZE}px`;
+    el.style.lineHeight = `${config.LETTER_SIZE}px`;
     el.innerText = char;
     
     if (isInner) {
@@ -84,6 +131,14 @@ function drawCorrespondenceLines() {
   elements.correspondenceLines.innerHTML = '';
   if (!state.showLines) return;
   
+  const config = getResponsiveConfig();
+  const container = elements.outerRing?.parentElement;
+  if (!container) return;
+  
+  // Set SVG viewBox to match the actual container size
+  const containerSize = container.offsetWidth;
+  elements.correspondenceLines.setAttribute('viewBox', `0 0 ${containerSize} ${containerSize}`);
+  
   const shift = parseInt(elements.shiftSlider.value);
   const mode = document.querySelector('input[name="mode"]:checked').value;
   const isDecrypt = mode === 'decrypt';
@@ -91,13 +146,13 @@ function drawCorrespondenceLines() {
   
   state.alphabet.forEach((char, i) => {
     const outerAngle = (360 / 26) * i - 90;
-    const outerX = CONFIG.CENTER_X + CONFIG.OUTER_RADIUS * Math.cos(outerAngle * Math.PI / 180);
-    const outerY = CONFIG.CENTER_Y + CONFIG.OUTER_RADIUS * Math.sin(outerAngle * Math.PI / 180);
+    const outerX = config.CENTER_X + config.OUTER_RADIUS * Math.cos(outerAngle * Math.PI / 180);
+    const outerY = config.CENTER_Y + config.OUTER_RADIUS * Math.sin(outerAngle * Math.PI / 180);
     
     const targetIndex = isDecrypt ? (i - shift + 26) % 26 : (i + shift) % 26;
     const innerAngle = (360 / 26) * targetIndex - 90 + ringRotationAngle;
-    const innerX = CONFIG.CENTER_X + CONFIG.INNER_RADIUS * Math.cos(innerAngle * Math.PI / 180);
-    const innerY = CONFIG.CENTER_Y + CONFIG.INNER_RADIUS * Math.sin(innerAngle * Math.PI / 180);
+    const innerX = config.CENTER_X + config.INNER_RADIUS * Math.cos(innerAngle * Math.PI / 180);
+    const innerY = config.CENTER_Y + config.INNER_RADIUS * Math.sin(innerAngle * Math.PI / 180);
     
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', outerX);
@@ -255,6 +310,26 @@ function setupEventListeners() {
   elements.toggleSwitch.addEventListener('click', toggleLines);
   elements.themeToggle.addEventListener('click', () => themeManager.toggleTheme());
   elements.copyButton.addEventListener('click', copyToClipboard);
+  
+  // Window resize handler with debouncing
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      createRing(elements.outerRing);
+      createRing(elements.innerRing, true);
+      update();
+    }, 250);
+  });
+  
+  // Orientation change handler for mobile devices
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      createRing(elements.outerRing);
+      createRing(elements.innerRing, true);
+      update();
+    }, 300);
+  });
 }
 
 // Initialize application
