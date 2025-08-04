@@ -333,7 +333,8 @@ textarea:focus {
   display: none;
 }
 
-.correspondence-toggle {
+.correspondence-toggle,
+.exclude-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -341,7 +342,8 @@ textarea:focus {
   justify-content: center;
 }
 
-.correspondence-toggle label {
+.correspondence-toggle label,
+.exclude-toggle label {
   font-weight: 500;
   color: var(--label-color);
   cursor: pointer;

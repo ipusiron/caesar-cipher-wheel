@@ -60,6 +60,7 @@ const elements = {
   output: null,
   correspondenceLines: null,
   toggleSwitch: null,
+  excludeToggle: null,
   themeToggle: null,
   themeIcon: null,
   copyButton: null
@@ -68,6 +69,7 @@ const elements = {
 // State
 const state = {
   showLines: false,
+  excludeNonAlpha: false,
   alphabet: [...CONFIG.ALPHABET]
 };
 
@@ -81,6 +83,7 @@ function initializeElements() {
   elements.output = document.getElementById('output');
   elements.correspondenceLines = document.getElementById('correspondenceLines');
   elements.toggleSwitch = document.getElementById('toggleSwitch');
+  elements.excludeToggle = document.getElementById('excludeToggle');
   elements.themeToggle = document.getElementById('themeToggle');
   elements.themeIcon = elements.themeToggle.querySelector('.theme-icon');
   elements.copyButton = document.getElementById('copyButton');
@@ -88,12 +91,26 @@ function initializeElements() {
 
 // Cipher functionality
 function caesarCipher(text, shift, decrypt = false) {
-  return text.toUpperCase().replace(/[A-Z]/g, c => {
-    const index = state.alphabet.indexOf(c);
-    if (index === -1) return c;
-    const offset = decrypt ? (index - shift + 26) % 26 : (index + shift) % 26;
-    return state.alphabet[offset];
-  });
+  const upperText = text.toUpperCase();
+  
+  if (state.excludeNonAlpha) {
+    // Remove all non-alphabetic characters first, then encrypt/decrypt
+    const alphabeticOnly = upperText.replace(/[^A-Z]/g, '');
+    return alphabeticOnly.replace(/[A-Z]/g, c => {
+      const index = state.alphabet.indexOf(c);
+      if (index === -1) return c;
+      const offset = decrypt ? (index - shift + 26) % 26 : (index + shift) % 26;
+      return state.alphabet[offset];
+    });
+  } else {
+    // Keep spaces and symbols, only encrypt/decrypt letters
+    return upperText.replace(/[A-Z]/g, c => {
+      const index = state.alphabet.indexOf(c);
+      if (index === -1) return c;
+      const offset = decrypt ? (index - shift + 26) % 26 : (index + shift) % 26;
+      return state.alphabet[offset];
+    });
+  }
 }
 
 // Ring creation
@@ -172,6 +189,12 @@ function toggleLines() {
   elements.toggleSwitch.classList.toggle('active', state.showLines);
   elements.correspondenceLines.classList.toggle('hidden', !state.showLines);
   drawCorrespondenceLines();
+}
+
+function toggleExcludeNonAlpha() {
+  state.excludeNonAlpha = !state.excludeNonAlpha;
+  elements.excludeToggle.classList.toggle('active', state.excludeNonAlpha);
+  update();
 }
 
 // Main update function
@@ -308,6 +331,7 @@ function setupEventListeners() {
   );
   
   elements.toggleSwitch.addEventListener('click', toggleLines);
+  elements.excludeToggle.addEventListener('click', toggleExcludeNonAlpha);
   elements.themeToggle.addEventListener('click', () => themeManager.toggleTheme());
   elements.copyButton.addEventListener('click', copyToClipboard);
   
