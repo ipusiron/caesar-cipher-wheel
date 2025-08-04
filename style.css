@@ -415,6 +415,33 @@ textarea:focus {
   transform: rotate(20deg);
 }
 
+/* Footer */
+.footer {
+  margin-top: 30px;
+  padding: 15px;
+  text-align: center;
+  border-top: 1px solid #000000;
+  color: #6c757d;
+}
+
+.footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .footer {
+  border-top-color: #3f3f46;
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .footer a {
+  color: #4dabf7;
+}
+
 /* Responsive design */
 @media (max-width: 480px) {
   .disk-container {
