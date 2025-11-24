@@ -1,3 +1,42 @@
+<!--
+---
+id: day003
+slug: caesar-cipher-wheel
+
+title: "Caesar Cipher Wheel Tool"
+
+subtitle_ja: "視覚的な暗号円盤でシーザー暗号を学ぶ"
+subtitle_en: "Learn Caesar cipher with a visual cipher disk"
+
+description_ja: "インタラクティブなシーザー暗号（シフト暗号）の暗号化・復号ツール。視覚的な暗号円盤インターフェイスで暗号化の仕組みを直感的に理解できます。"
+description_en: "Interactive Caesar cipher encryption/decryption tool with a visual cipher disk interface for intuitive understanding of encryption."
+
+category_ja:
+  - 古典暗号
+  - 換字式暗号
+category_en:
+  - Classical Cryptography
+  - Substitution Cipher
+
+difficulty: 1
+
+tags:
+  - caesar-cipher
+  - shift-cipher
+  - substitution-cipher
+  - encryption
+  - decryption
+  - cryptography
+  - visualization
+  - educational
+
+repo_url: "https://github.com/ipusiron/caesar-cipher-wheel"
+demo_url: "https://ipusiron.github.io/caesar-cipher-wheel/"
+
+hub: true
+---
+-->
+
 # シーザー暗号円盤ツール（Caesar Cipher Wheel Tool）
 
 **Day 3 - 生成AIで作るセキュリティツール100**
