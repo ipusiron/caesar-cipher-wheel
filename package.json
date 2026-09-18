@@ -1,0 +1,7 @@
+{
+  "name": "caesar-cipher-wheel",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}

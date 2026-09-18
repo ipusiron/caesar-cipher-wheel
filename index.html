@@ -3,78 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="Interactive Caesar cipher wheel: encrypt and decrypt with a rotating cipher disk" />
   <title>Caesar Cipher Wheel Tool</title>
-  <link rel="stylesheet" href="style.css" /> <!-- 外部CSSをリンク -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Caesar Cipher Wheel Tool</h1>
-
-  <div class="theme-toggle">
-    <button id="themeToggle" class="theme-button" aria-label="Toggle dark mode">
-      <span class="theme-icon">🌙</span>
-    </button>
-  </div>
-
-  <div class="control-panel">
-    <textarea id="inputText" rows="3" placeholder="Enter your message here...">hello world.</textarea>
-    
-    <div class="shift-controls">
-      <span class="shift-label">Shift:</span>
-      <input type="number" id="shiftNumber" min="0" max="25" value="0" />
-      <input type="range" id="shift" min="0" max="25" value="0" />
-    </div>
-
-    <div class="mode-controls">
-      <label>
-        <input type="radio" name="mode" value="encrypt" checked />
-        Encrypt
-      </label>
-      <label>
-        <input type="radio" name="mode" value="decrypt" />
-        Decrypt
-      </label>
-    </div>
-
-    <div class="correspondence-toggle">
-      <label for="showLines">Show correspondence lines:</label>
-      <div class="toggle-switch" id="toggleSwitch">
-        <div class="toggle-slider"></div>
-      </div>
-    </div>
-    
-    <div class="exclude-toggle">
-      <label for="excludeNonAlpha">Exclude spaces and symbols:</label>
-      <div class="toggle-switch" id="excludeToggle">
-        <div class="toggle-slider"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="disk-container">
-    <div class="outer-ring-bg"></div>
-    <div class="inner-ring-bg"></div>
-    <svg class="correspondence-lines hidden" id="correspondenceLines" viewBox="0 0 400 400">
-      <!-- Lines will be drawn here -->
-    </svg>
-    <div class="ring" id="outerRing"></div>
-    <div class="ring" id="innerRing"></div>
-    <div class="center-circle"></div>
-  </div>
-
-  <div class="output-panel">
-    <span class="output-label">Result:</span>
-    <div class="output-container">
-      <div id="output"></div>
-      <button id="copyButton" class="copy-button" title="Copy to clipboard">
-        <span class="copy-icon">📋</span>
+  <header class="page-header">
+    <h1>Caesar Cipher Wheel Tool</h1>
+    <div class="theme-toggle">
+      <button id="themeToggle" class="theme-button" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="theme-icon" aria-hidden="true">🌙</span>
       </button>
     </div>
-  </div>
+  </header>
 
-  <div class="footer">
-    🔗 GitHubリポジトリはこちら（<a href="https://github.com/ipusiron/caesar-cipher-wheel" target="_blank">ipusiron/caesar-cipher-wheel</a>）
-  </div>
+  <main>
+    <div class="control-panel">
+      <label class="visually-hidden" for="inputText">Text to encrypt or decrypt</label>
+      <textarea id="inputText" rows="3" placeholder="Enter your message here...">hello world.</textarea>
 
+      <div class="shift-controls">
+        <label class="shift-label" for="shiftNumber">Shift:</label>
+        <input type="number" id="shiftNumber" min="0" max="25" value="0" inputmode="numeric" />
+        <input type="range" id="shift" min="0" max="25" value="0" aria-label="Shift value" />
+      </div>
+
+      <fieldset class="mode-controls">
+        <legend class="visually-hidden">Cipher mode</legend>
+        <label>
+          <input type="radio" name="mode" value="encrypt" checked />
+          Encrypt
+        </label>
+        <label>
+          <input type="radio" name="mode" value="decrypt" />
+          Decrypt
+        </label>
+      </fieldset>
+
+      <div class="correspondence-toggle">
+        <label class="switch">
+          <input type="checkbox" id="showLines" role="switch" />
+          <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          <span>Show correspondence lines</span>
+        </label>
+      </div>
+
+      <div class="exclude-toggle">
+        <label class="switch">
+          <input type="checkbox" id="excludeNonAlpha" role="switch" />
+          <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          <span>Exclude spaces and symbols</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="disk-container" aria-hidden="true">
+      <div class="outer-ring-bg"></div>
+      <div class="inner-ring-bg"></div>
+      <svg class="correspondence-lines hidden" id="correspondenceLines" viewBox="0 0 400 400"></svg>
+      <div class="ring" id="outerRing"></div>
+      <div class="ring" id="innerRing"></div>
+      <div class="center-circle"></div>
+    </div>
+    <p id="diskDescription" class="visually-hidden">Shift 0, encrypt mode: A maps to A</p>
+
+    <div class="output-panel">
+      <span class="output-label">Result:</span>
+      <div class="output-container">
+        <output id="output" for="inputText shift shiftNumber">Enter text above to see the result</output>
+        <span id="copyFeedback" class="copy-feedback" role="status" aria-live="polite"></span>
+        <button id="copyButton" class="copy-button" type="button" title="Copy to clipboard" aria-label="Copy result to clipboard">
+          <span class="copy-icon" aria-hidden="true">📋</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span lang="ja">🔗 GitHubリポジトリはこちら（</span><a href="https://github.com/ipusiron/caesar-cipher-wheel" target="_blank" rel="noopener noreferrer">ipusiron/caesar-cipher-wheel</a><span lang="ja">）</span>
+  </footer>
+
+  <noscript>This tool requires JavaScript.</noscript>
+  <script src="cipher.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
