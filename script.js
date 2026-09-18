@@ -1,56 +1,9 @@
-// Constants
 const CONFIG = {
-  ALPHABET: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   INNER_RADIUS: 120,
   OUTER_RADIUS: 170,
-  CENTER_X: 200,
-  CENTER_Y: 200,
   LETTER_SIZE: 32
 };
 
-// Dynamic configuration based on container size
-function getResponsiveConfig() {
-  const container = elements.outerRing?.parentElement;
-  if (!container) return CONFIG;
-  
-  const containerWidth = container.offsetWidth;
-  
-  // Different configurations for various screen sizes
-  let innerRadius, outerRadius, letterSize;
-  
-  if (containerWidth <= 280) {
-    // Very small screens (280px)
-    innerRadius = 84;
-    outerRadius = 119;
-    letterSize = 22;
-  } else if (containerWidth <= 300) {
-    // Small screens (300px)
-    innerRadius = 90;
-    outerRadius = 127;
-    letterSize = 24;
-  } else if (containerWidth <= 320) {
-    // Medium-small screens (320px)
-    innerRadius = 96;
-    outerRadius = 136;
-    letterSize = 24;
-  } else {
-    // Default (400px)
-    innerRadius = 120;
-    outerRadius = 170;
-    letterSize = 32;
-  }
-  
-  return {
-    ALPHABET: CONFIG.ALPHABET,
-    INNER_RADIUS: innerRadius,
-    OUTER_RADIUS: outerRadius,
-    CENTER_X: containerWidth / 2,
-    CENTER_Y: containerWidth / 2,
-    LETTER_SIZE: letterSize
-  };
-}
-
-// DOM Elements
 const elements = {
   outerRing: null,
   innerRing: null,
@@ -59,21 +12,59 @@ const elements = {
   shiftNumber: null,
   output: null,
   correspondenceLines: null,
-  toggleSwitch: null,
-  excludeToggle: null,
+  showLines: null,
+  excludeNonAlpha: null,
   themeToggle: null,
   themeIcon: null,
-  copyButton: null
+  copyButton: null,
+  copyIcon: null,
+  copyFeedback: null,
+  diskDescription: null
 };
 
-// State
 const state = {
   showLines: false,
-  excludeNonAlpha: false,
-  alphabet: [...CONFIG.ALPHABET]
+  excludeNonAlpha: false
 };
 
-// Initialize DOM elements
+function getResponsiveConfig() {
+  const container = elements.outerRing?.parentElement;
+  if (!container) {
+    return CONFIG;
+  }
+
+  const containerWidth = container.offsetWidth;
+  let innerRadius;
+  let outerRadius;
+  let letterSize;
+
+  if (containerWidth <= 280) {
+    innerRadius = 84;
+    outerRadius = 119;
+    letterSize = 22;
+  } else if (containerWidth <= 300) {
+    innerRadius = 90;
+    outerRadius = 127;
+    letterSize = 24;
+  } else if (containerWidth <= 320) {
+    innerRadius = 96;
+    outerRadius = 136;
+    letterSize = 24;
+  } else {
+    innerRadius = CONFIG.INNER_RADIUS;
+    outerRadius = CONFIG.OUTER_RADIUS;
+    letterSize = CONFIG.LETTER_SIZE;
+  }
+
+  return {
+    INNER_RADIUS: innerRadius,
+    OUTER_RADIUS: outerRadius,
+    CENTER_X: containerWidth / 2,
+    CENTER_Y: containerWidth / 2,
+    LETTER_SIZE: letterSize
+  };
+}
+
 function initializeElements() {
   elements.outerRing = document.getElementById('outerRing');
   elements.innerRing = document.getElementById('innerRing');
@@ -82,273 +73,262 @@ function initializeElements() {
   elements.shiftNumber = document.getElementById('shiftNumber');
   elements.output = document.getElementById('output');
   elements.correspondenceLines = document.getElementById('correspondenceLines');
-  elements.toggleSwitch = document.getElementById('toggleSwitch');
-  elements.excludeToggle = document.getElementById('excludeToggle');
+  elements.showLines = document.getElementById('showLines');
+  elements.excludeNonAlpha = document.getElementById('excludeNonAlpha');
   elements.themeToggle = document.getElementById('themeToggle');
   elements.themeIcon = elements.themeToggle.querySelector('.theme-icon');
   elements.copyButton = document.getElementById('copyButton');
+  elements.copyIcon = elements.copyButton.querySelector('.copy-icon');
+  elements.copyFeedback = document.getElementById('copyFeedback');
+  elements.diskDescription = document.getElementById('diskDescription');
 }
 
-// Cipher functionality
-function caesarCipher(text, shift, decrypt = false) {
-  const upperText = text.toUpperCase();
-  
-  if (state.excludeNonAlpha) {
-    // Remove all non-alphabetic characters first, then encrypt/decrypt
-    const alphabeticOnly = upperText.replace(/[^A-Z]/g, '');
-    return alphabeticOnly.replace(/[A-Z]/g, c => {
-      const index = state.alphabet.indexOf(c);
-      if (index === -1) return c;
-      const offset = decrypt ? (index - shift + 26) % 26 : (index + shift) % 26;
-      return state.alphabet[offset];
-    });
-  } else {
-    // Keep spaces and symbols, only encrypt/decrypt letters
-    return upperText.replace(/[A-Z]/g, c => {
-      const index = state.alphabet.indexOf(c);
-      if (index === -1) return c;
-      const offset = decrypt ? (index - shift + 26) % 26 : (index + shift) % 26;
-      return state.alphabet[offset];
-    });
-  }
-}
-
-// Ring creation
 function createRing(container, isInner = false) {
-  container.innerHTML = '';
+  container.replaceChildren();
   const config = getResponsiveConfig();
   const radius = isInner ? config.INNER_RADIUS : config.OUTER_RADIUS;
-  
-  state.alphabet.forEach((char, i) => {
-    const angle = (360 / state.alphabet.length) * i;
-    const angleRad = (angle - 90) * Math.PI / 180;
-    const x = config.CENTER_X + radius * Math.cos(angleRad);
-    const y = config.CENTER_Y + radius * Math.sin(angleRad);
-    
-    const el = document.createElement('div');
-    el.className = `letter ${isInner ? 'inner-letter' : 'outer-letter'}`;
-    el.style.left = `${x - config.LETTER_SIZE / 2}px`;
-    el.style.top = `${y - config.LETTER_SIZE / 2}px`;
-    el.style.fontSize = `${config.LETTER_SIZE * 0.56}px`; // Dynamic font size
-    el.style.width = `${config.LETTER_SIZE}px`;
-    el.style.height = `${config.LETTER_SIZE}px`;
-    el.style.lineHeight = `${config.LETTER_SIZE}px`;
-    el.innerText = char;
-    
+
+  [...CaesarCipher.ALPHABET].forEach((character, index) => {
+    const angle = (360 / CaesarCipher.ALPHABET.length) * index;
+    const angleRadians = (angle - 90) * Math.PI / 180;
+    const x = config.CENTER_X + radius * Math.cos(angleRadians);
+    const y = config.CENTER_Y + radius * Math.sin(angleRadians);
+    const letter = document.createElement('div');
+
+    letter.className = `letter ${isInner ? 'inner-letter' : 'outer-letter'}`;
+    letter.style.left = `${x - config.LETTER_SIZE / 2}px`;
+    letter.style.top = `${y - config.LETTER_SIZE / 2}px`;
+    letter.style.fontSize = `${config.LETTER_SIZE * 0.56}px`;
+    letter.style.width = `${config.LETTER_SIZE}px`;
+    letter.style.height = `${config.LETTER_SIZE}px`;
+    letter.style.lineHeight = `${config.LETTER_SIZE}px`;
+    letter.textContent = character;
+
     if (isInner) {
-      el.setAttribute('data-letter', char);
+      letter.setAttribute('data-letter', character);
     }
-    
-    container.appendChild(el);
+
+    container.appendChild(letter);
   });
 }
 
-// Correspondence lines
 function drawCorrespondenceLines() {
-  elements.correspondenceLines.innerHTML = '';
-  if (!state.showLines) return;
-  
+  elements.correspondenceLines.replaceChildren();
+  if (!state.showLines) {
+    return;
+  }
+
   const config = getResponsiveConfig();
   const container = elements.outerRing?.parentElement;
-  if (!container) return;
-  
-  // Set SVG viewBox to match the actual container size
+  if (!container) {
+    return;
+  }
+
   const containerSize = container.offsetWidth;
   elements.correspondenceLines.setAttribute('viewBox', `0 0 ${containerSize} ${containerSize}`);
-  
-  const shift = parseInt(elements.shiftSlider.value);
-  const mode = document.querySelector('input[name="mode"]:checked').value;
-  const isDecrypt = mode === 'decrypt';
-  const ringRotationAngle = (360 / 26) * shift * (isDecrypt ? 1 : -1);
-  
-  state.alphabet.forEach((char, i) => {
-    const outerAngle = (360 / 26) * i - 90;
+
+  const shift = CaesarCipher.normalizeShift(parseInt(elements.shiftSlider.value, 10));
+  const isDecrypt = document.querySelector('input[name="mode"]:checked').value === 'decrypt';
+  const ringRotationAngle = (360 / CaesarCipher.ALPHABET.length) * shift * (isDecrypt ? 1 : -1);
+
+  [...CaesarCipher.ALPHABET].forEach((character, index) => {
+    const outerAngle = (360 / CaesarCipher.ALPHABET.length) * index - 90;
     const outerX = config.CENTER_X + config.OUTER_RADIUS * Math.cos(outerAngle * Math.PI / 180);
     const outerY = config.CENTER_Y + config.OUTER_RADIUS * Math.sin(outerAngle * Math.PI / 180);
-    
-    const targetIndex = isDecrypt ? (i - shift + 26) % 26 : (i + shift) % 26;
-    const innerAngle = (360 / 26) * targetIndex - 90 + ringRotationAngle;
+    const targetIndex = (index + (isDecrypt ? -shift : shift) + CaesarCipher.ALPHABET.length) % CaesarCipher.ALPHABET.length;
+    const innerAngle = (360 / CaesarCipher.ALPHABET.length) * targetIndex - 90 + ringRotationAngle;
     const innerX = config.CENTER_X + config.INNER_RADIUS * Math.cos(innerAngle * Math.PI / 180);
     const innerY = config.CENTER_Y + config.INNER_RADIUS * Math.sin(innerAngle * Math.PI / 180);
-    
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
     line.setAttribute('x1', outerX);
     line.setAttribute('y1', outerY);
     line.setAttribute('x2', innerX);
     line.setAttribute('y2', innerY);
-    line.setAttribute('stroke', '#e74c3c');
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('opacity', '0.7');
-    
     elements.correspondenceLines.appendChild(line);
   });
 }
 
-function toggleLines() {
-  state.showLines = !state.showLines;
-  elements.toggleSwitch.classList.toggle('active', state.showLines);
+function updateCorrespondenceLines() {
   elements.correspondenceLines.classList.toggle('hidden', !state.showLines);
   drawCorrespondenceLines();
 }
 
-function toggleExcludeNonAlpha() {
-  state.excludeNonAlpha = !state.excludeNonAlpha;
-  elements.excludeToggle.classList.toggle('active', state.excludeNonAlpha);
-  update();
+function updateDiskDescription(shift, isDecrypt) {
+  const mappedLetter = CaesarCipher.caesarShift('A', shift, { decrypt: isDecrypt });
+  const mode = isDecrypt ? 'decrypt' : 'encrypt';
+  elements.diskDescription.textContent = `Shift ${shift}, ${mode} mode: A maps to ${mappedLetter}`;
 }
 
-// Main update function
 function update() {
-  const shift = parseInt(elements.shiftSlider.value);
+  const shift = CaesarCipher.normalizeShift(parseInt(elements.shiftSlider.value, 10));
+  elements.shiftSlider.value = shift;
   elements.shiftNumber.value = shift;
-  
-  const mode = document.querySelector('input[name="mode"]:checked').value;
-  const isDecrypt = mode === 'decrypt';
-  const angle = (360 / 26) * shift * (isDecrypt ? 1 : -1);
-  
+
+  const isDecrypt = document.querySelector('input[name="mode"]:checked').value === 'decrypt';
+  const angle = (360 / CaesarCipher.ALPHABET.length) * shift * (isDecrypt ? 1 : -1);
   elements.innerRing.style.transform = `rotate(${angle}deg)`;
-  
-  const innerLetters = elements.innerRing.querySelectorAll('.inner-letter');
-  innerLetters.forEach(letter => {
+
+  elements.innerRing.querySelectorAll('.inner-letter').forEach(letter => {
     letter.style.transform = `rotate(${-angle}deg)`;
   });
-  
-  const text = elements.inputText.value;
-  if (text) {
-    const result = caesarCipher(text, shift, isDecrypt);
-    elements.output.textContent = result;
+
+  if (elements.inputText.value) {
+    elements.output.textContent = CaesarCipher.caesarShift(elements.inputText.value, shift, {
+      decrypt: isDecrypt,
+      excludeNonAlpha: state.excludeNonAlpha
+    });
   } else {
     elements.output.textContent = 'Enter text above to see the result';
   }
-  
-  drawCorrespondenceLines();
+
+  updateDiskDescription(shift, isDecrypt);
+  updateCorrespondenceLines();
 }
 
-// Copy functionality
+function clampShift(value) {
+  const parsedValue = parseInt(value, 10);
+  if (Number.isNaN(parsedValue)) {
+    return 0;
+  }
+
+  return Math.min(25, Math.max(0, parsedValue));
+}
+
+function showCopyFeedback(message, isSuccess) {
+  elements.copyIcon.textContent = isSuccess ? '✓' : '!';
+  elements.copyButton.classList.toggle('success', isSuccess);
+  elements.copyButton.classList.toggle('failure', !isSuccess);
+  elements.copyFeedback.textContent = message;
+
+  window.setTimeout(() => {
+    elements.copyIcon.textContent = '📋';
+    elements.copyButton.classList.remove('success', 'failure');
+    elements.copyFeedback.textContent = '';
+  }, 2000);
+}
+
 async function copyToClipboard() {
   const outputText = elements.output.textContent;
-  
   if (!outputText || outputText === 'Enter text above to see the result') {
     return;
   }
-  
+
   try {
-    await navigator.clipboard.writeText(outputText);
-    
-    // Visual feedback
-    const originalIcon = elements.copyButton.querySelector('.copy-icon').textContent;
-    elements.copyButton.querySelector('.copy-icon').textContent = '✓';
-    elements.copyButton.classList.add('success');
-    
-    setTimeout(() => {
-      elements.copyButton.querySelector('.copy-icon').textContent = originalIcon;
-      elements.copyButton.classList.remove('success');
-    }, 2000);
-  } catch (err) {
-    console.error('Failed to copy text:', err);
-    
-    // Fallback for older browsers
-    const tempTextArea = document.createElement('textarea');
-    tempTextArea.value = outputText;
-    tempTextArea.style.position = 'fixed';
-    tempTextArea.style.left = '-9999px';
-    document.body.appendChild(tempTextArea);
-    tempTextArea.select();
-    
-    try {
-      document.execCommand('copy');
-      // Visual feedback for fallback
-      const originalIcon = elements.copyButton.querySelector('.copy-icon').textContent;
-      elements.copyButton.querySelector('.copy-icon').textContent = '✓';
-      elements.copyButton.classList.add('success');
-      
-      setTimeout(() => {
-        elements.copyButton.querySelector('.copy-icon').textContent = originalIcon;
-        elements.copyButton.classList.remove('success');
-      }, 2000);
-    } catch (fallbackErr) {
-      console.error('Fallback copy failed:', fallbackErr);
+    if (!navigator.clipboard?.writeText) {
+      throw new Error('Clipboard API is unavailable');
     }
-    
-    document.body.removeChild(tempTextArea);
+
+    await navigator.clipboard.writeText(outputText);
+    showCopyFeedback('Copied', true);
+  } catch {
+    showCopyFeedback('Copy failed', false);
   }
 }
 
-// Theme management
+function getSavedTheme() {
+  try {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : null;
+  } catch {
+    return null;
+  }
+}
+
+function getEffectiveTheme() {
+  const explicitTheme = document.documentElement.getAttribute('data-theme');
+  if (explicitTheme === 'light' || explicitTheme === 'dark') {
+    return explicitTheme;
+  }
+
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function updateThemeButton(theme) {
+  const isDark = theme === 'dark';
+  elements.themeIcon.textContent = isDark ? '☀️' : '🌙';
+  elements.themeToggle.setAttribute('aria-pressed', String(isDark));
+  elements.themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+}
+
 const themeManager = {
   setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    elements.themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-    localStorage.setItem('theme', theme);
-  },
-  
-  toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    this.setTheme(newTheme);
-  },
-  
-  initializeTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme) {
-      this.setTheme(savedTheme);
-    } else if (prefersDark) {
-      this.setTheme('dark');
-    } else {
-      this.setTheme('light');
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      // The control remains usable when storage is unavailable.
     }
-    
+    updateThemeButton(theme);
+  },
+
+  toggleTheme() {
+    this.setTheme(getEffectiveTheme() === 'dark' ? 'light' : 'dark');
+  },
+
+  initializeTheme() {
+    const savedTheme = getSavedTheme();
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+    updateThemeButton(getEffectiveTheme());
+
     if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (!localStorage.getItem('theme')) {
-          this.setTheme(e.matches ? 'dark' : 'light');
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (!getSavedTheme()) {
+          updateThemeButton(getEffectiveTheme());
         }
       });
     }
   }
 };
 
-// Event handlers
 function setupEventListeners() {
   elements.shiftSlider.addEventListener('input', () => {
     elements.shiftNumber.value = elements.shiftSlider.value;
     update();
   });
-  
-  elements.shiftNumber.addEventListener('input', () => {
-    const value = Math.min(25, Math.max(0, parseInt(elements.shiftNumber.value) || 0));
-    elements.shiftNumber.value = value;
-    elements.shiftSlider.value = value;
+
+  const commitNumberShift = () => {
+    const shift = clampShift(elements.shiftNumber.value);
+    elements.shiftNumber.value = shift;
+    elements.shiftSlider.value = shift;
+    update();
+  };
+
+  elements.shiftNumber.addEventListener('change', commitNumberShift);
+  elements.shiftNumber.addEventListener('blur', commitNumberShift);
+  elements.inputText.addEventListener('input', update);
+
+  document.querySelectorAll('input[name="mode"]').forEach(radio => {
+    radio.addEventListener('change', update);
+  });
+
+  elements.showLines.addEventListener('change', () => {
+    state.showLines = elements.showLines.checked;
+    updateCorrespondenceLines();
+  });
+
+  elements.excludeNonAlpha.addEventListener('change', () => {
+    state.excludeNonAlpha = elements.excludeNonAlpha.checked;
     update();
   });
-  
-  elements.inputText.addEventListener('input', update);
-  
-  document.querySelectorAll('input[name="mode"]').forEach(r => 
-    r.addEventListener('change', update)
-  );
-  
-  elements.toggleSwitch.addEventListener('click', toggleLines);
-  elements.excludeToggle.addEventListener('click', toggleExcludeNonAlpha);
+
   elements.themeToggle.addEventListener('click', () => themeManager.toggleTheme());
   elements.copyButton.addEventListener('click', copyToClipboard);
-  
-  // Window resize handler with debouncing
+
   let resizeTimer;
   window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
       createRing(elements.outerRing);
       createRing(elements.innerRing, true);
       update();
     }, 250);
   });
-  
-  // Orientation change handler for mobile devices
+
   window.addEventListener('orientationchange', () => {
-    setTimeout(() => {
+    window.setTimeout(() => {
       createRing(elements.outerRing);
       createRing(elements.innerRing, true);
       update();
@@ -356,7 +336,6 @@ function setupEventListeners() {
   });
 }
 
-// Initialize application
 function initialize() {
   initializeElements();
   createRing(elements.outerRing);
@@ -366,5 +345,4 @@ function initialize() {
   update();
 }
 
-// Start the application when DOM is ready
 document.addEventListener('DOMContentLoaded', initialize);
