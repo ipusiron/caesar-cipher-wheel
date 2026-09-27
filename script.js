@@ -156,8 +156,8 @@ function updateCorrespondenceLines() {
 
 function updateDiskDescription(shift, isDecrypt) {
   const mappedLetter = CaesarCipher.caesarShift('A', shift, { decrypt: isDecrypt });
-  const mode = isDecrypt ? 'decrypt' : 'encrypt';
-  elements.diskDescription.textContent = `Shift ${shift}, ${mode} mode: A maps to ${mappedLetter}`;
+  const key = isDecrypt ? 'disk.decrypt' : 'disk.encrypt';
+  elements.diskDescription.textContent = I18n.t(key, { shift, letter: mappedLetter });
 }
 
 function update() {
@@ -178,8 +178,10 @@ function update() {
       decrypt: isDecrypt,
       excludeNonAlpha: state.excludeNonAlpha
     });
+    elements.output.dataset.empty = 'false';
   } else {
-    elements.output.textContent = 'Enter text above to see the result';
+    elements.output.textContent = I18n.t('output.empty');
+    elements.output.dataset.empty = 'true';
   }
 
   updateDiskDescription(shift, isDecrypt);
@@ -210,7 +212,8 @@ function showCopyFeedback(message, isSuccess) {
 
 async function copyToClipboard() {
   const outputText = elements.output.textContent;
-  if (!outputText || outputText === 'Enter text above to see the result') {
+  // 「まだ何も無い」の文言は言語で変わる。文字列ではなく印で見分ける
+  if (!outputText || elements.output.dataset.empty === 'true') {
     return;
   }
 
@@ -220,9 +223,9 @@ async function copyToClipboard() {
     }
 
     await navigator.clipboard.writeText(outputText);
-    showCopyFeedback('Copied', true);
+    showCopyFeedback(I18n.t('copy.done'), true);
   } catch {
-    showCopyFeedback('Copy failed', false);
+    showCopyFeedback(I18n.t('copy.failed'), false);
   }
 }
 
@@ -248,7 +251,9 @@ function updateThemeButton(theme) {
   const isDark = theme === 'dark';
   elements.themeIcon.textContent = isDark ? '☀️' : '🌙';
   elements.themeToggle.setAttribute('aria-pressed', String(isDark));
-  elements.themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  elements.themeToggle.setAttribute('aria-label', I18n.t(isDark ? 'theme.toLight' : 'theme.toDark'));
+  // 言語を切り替えたときに、この属性も訳し直せるようにしておく
+  elements.themeToggle.setAttribute('data-i18n-aria-label', isDark ? 'theme.toLight' : 'theme.toDark');
 }
 
 const themeManager = {
@@ -338,6 +343,13 @@ function setupEventListeners() {
 
 function initialize() {
   initializeElements();
+  I18n.init();
+  const langToggle = document.getElementById('langToggle');
+  if (langToggle) {
+    langToggle.addEventListener('click', () => I18n.setLanguage(I18n.language === 'ja' ? 'en' : 'ja'));
+  }
+  // 言語を変えたら、スクリプトが書き込んだ文言も訳し直す
+  document.addEventListener('languagechange', () => update());
   createRing(elements.outerRing);
   createRing(elements.innerRing, true);
   themeManager.initializeTheme();

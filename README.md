@@ -39,6 +39,8 @@ hub: true
 
 # Caesar Cipher Wheel Tool - シーザー暗号円盤ツール
 
+[English](README.en.md) · 日本語
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/caesar-cipher-wheel?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ipusiron/caesar-cipher-wheel?style=social)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ipusiron/caesar-cipher-wheel)
@@ -86,6 +88,7 @@ hub: true
 - **文字の正立維持**：内側の円盤が回転しても読みやすい向きを保持
 - **出力の扱い**：英字は大文字に統一し、英字以外はそのまま残す。除外ONのときは英字以外を取り除く
 - **レスポンシブデザイン**：モバイルブラウザーでの利用
+- **日本語・英語の切り替え**：右上のボタン、`?lang=en`、ブラウザーの言語設定のいずれでも切り替わる
 
 ---
 
@@ -98,6 +101,7 @@ hub: true
 5. **記号の扱い**：「Exclude spaces and symbols」をONにすると、空白・数字・記号などを出力から除外します。
 6. **結果のコピー**：コピーのボタンを押すと、変換結果をコピーします。成功または失敗は画面とスクリーンリーダーに通知されます。
 7. **テーマ切替**：右上のボタンでライト・ダークテーマを切り替えます。選択しない場合はOS設定に従います。
+8. **言語切替**：右上のボタンで日本語・英語を切り替えます。選択しない場合はブラウザーの言語設定に従います。
 
 ### 使い方の例
 
@@ -185,13 +189,13 @@ innerLetters.forEach(letter => {
 
 `npm test`でNode.js標準の`node --test`を実行します。Node.js 22以上で動作し、追加の依存パッケージはありません。GitHub Actionsではpushとpull requestごとに同じテストを実行します。
 
-テストは暗号処理だけでなく、READMEの暗号化の例と使い方の例の表、画像参照、HTMLの静的なアクセシビリティ・セキュリティ条件も照合します。
+テストは暗号処理だけでなく、READMEの暗号化の例と使い方の例の表、画像参照、HTMLの静的なアクセシビリティ・セキュリティ条件、日本語・英語の辞書の対応も照合します。
 
 ---
 
 ## 🔒 セキュリティ・プライバシー
 
-通信は行わず、入力したテキストも保存しません。localStorageに保存するのはライト・ダークテーマの選択だけです。HTMLにはContent Security Policyと`no-referrer`のreferrerポリシーを設定しています。
+通信は行わず、入力したテキストも保存しません。localStorageに保存するのはライト・ダークテーマと言語の選択だけです。HTMLにはContent Security Policyと`no-referrer`のreferrerポリシーを設定しています。
 
 ---
 
@@ -250,13 +254,16 @@ caesar-cipher-wheel/
 ├── test/
 │   ├── cipher.test.js     # 暗号ロジックの単体テスト
 │   ├── html.test.js       # HTMLの静的検証
+│   ├── i18n.test.js       # 日本語・英語の辞書の検証
 │   └── readme.test.js     # READMEの例と画像参照の検証
 ├── cipher.js              # DOMに依存しないシーザー暗号ロジック
+├── i18n.js                # 日本語・英語の文言（UI側は文字列を持たない）
 ├── index.html             # ツールのHTML構造
 ├── script.js              # 画面の描画とイベント処理
 ├── style.css              # レスポンシブデザインとテーマ
 ├── package.json           # 依存なしのテストコマンド
 ├── README.md              # 本ドキュメント
+├── README.en.md           # 英語版
 ├── LICENSE                # MITライセンス
 └── sample.png             # 旧スクリーンショット（参照なし）
 ```

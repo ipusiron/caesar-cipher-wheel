@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,9 +12,10 @@
 </head>
 <body>
   <header class="page-header">
-    <h1>Caesar Cipher Wheel Tool</h1>
+    <h1 data-i18n="app.title">Caesar Cipher Wheel Tool</h1>
     <div class="theme-toggle">
-      <button id="themeToggle" class="theme-button" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+      <button id="langToggle" class="theme-button lang-button" type="button" data-i18n="app.langButton" data-i18n-aria-label="app.langAria" aria-label="Switch language">English</button>
+      <button id="themeToggle" class="theme-button" type="button" data-i18n-aria-label="theme.toDark" aria-label="Switch to dark mode" aria-pressed="false">
         <span class="theme-icon" aria-hidden="true">🌙</span>
       </button>
     </div>
@@ -22,24 +23,24 @@
 
   <main>
     <div class="control-panel">
-      <label class="visually-hidden" for="inputText">Text to encrypt or decrypt</label>
-      <textarea id="inputText" rows="3" placeholder="Enter your message here...">hello world.</textarea>
+      <label class="visually-hidden" for="inputText" data-i18n="input.label">Text to encrypt or decrypt</label>
+      <textarea id="inputText" rows="3" data-i18n-placeholder="input.placeholder" placeholder="Enter your message here...">hello world.</textarea>
 
       <div class="shift-controls">
-        <label class="shift-label" for="shiftNumber">Shift:</label>
+        <label class="shift-label" for="shiftNumber"><span data-i18n="shift.label">Shift</span>:</label>
         <input type="number" id="shiftNumber" min="0" max="25" value="0" inputmode="numeric" />
-        <input type="range" id="shift" min="0" max="25" value="0" aria-label="Shift value" />
+        <input type="range" id="shift" min="0" max="25" value="0" data-i18n-aria-label="shift.aria" aria-label="Shift value" />
       </div>
 
       <fieldset class="mode-controls">
-        <legend class="visually-hidden">Cipher mode</legend>
+        <legend class="visually-hidden" data-i18n="mode.legend">Cipher mode</legend>
         <label>
           <input type="radio" name="mode" value="encrypt" checked />
-          Encrypt
+          <span data-i18n="mode.encrypt">Encrypt</span>
         </label>
         <label>
           <input type="radio" name="mode" value="decrypt" />
-          Decrypt
+          <span data-i18n="mode.decrypt">Decrypt</span>
         </label>
       </fieldset>
 
@@ -47,7 +48,7 @@
         <label class="switch">
           <input type="checkbox" id="showLines" role="switch" />
           <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
-          <span>Show correspondence lines</span>
+          <span data-i18n="toggle.lines">Show correspondence lines</span>
         </label>
       </div>
 
@@ -55,7 +56,7 @@
         <label class="switch">
           <input type="checkbox" id="excludeNonAlpha" role="switch" />
           <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
-          <span>Exclude spaces and symbols</span>
+          <span data-i18n="toggle.exclude">Exclude spaces and symbols</span>
         </label>
       </div>
     </div>
@@ -71,11 +72,11 @@
     <p id="diskDescription" class="visually-hidden">Shift 0, encrypt mode: A maps to A</p>
 
     <div class="output-panel">
-      <span class="output-label">Result:</span>
+      <span class="output-label"><span data-i18n="output.label">Result</span>:</span>
       <div class="output-container">
-        <output id="output" for="inputText shift shiftNumber">Enter text above to see the result</output>
+        <output id="output" for="inputText shift shiftNumber" data-i18n="output.empty">Enter text above to see the result</output>
         <span id="copyFeedback" class="copy-feedback" role="status" aria-live="polite"></span>
-        <button id="copyButton" class="copy-button" type="button" title="Copy to clipboard" aria-label="Copy result to clipboard">
+        <button id="copyButton" class="copy-button" type="button" data-i18n-title="copy.title" data-i18n-aria-label="copy.aria" title="Copy to clipboard" aria-label="Copy result to clipboard">
           <span class="copy-icon" aria-hidden="true">📋</span>
         </button>
       </div>
@@ -83,10 +84,11 @@
   </main>
 
   <footer class="footer">
-    <span lang="ja">🔗 GitHubリポジトリはこちら（</span><a href="https://github.com/ipusiron/caesar-cipher-wheel" target="_blank" rel="noopener noreferrer">ipusiron/caesar-cipher-wheel</a><span lang="ja">）</span>
+    <span data-i18n="footer.repo">🔗 GitHubリポジトリはこちら（</span><a href="https://github.com/ipusiron/caesar-cipher-wheel" target="_blank" rel="noopener noreferrer">ipusiron/caesar-cipher-wheel</a><span data-i18n="footer.repoEnd">）</span>
   </footer>
 
-  <noscript>This tool requires JavaScript.</noscript>
+  <noscript>This tool requires JavaScript. / このツールにはJavaScriptが要ります。</noscript>
+  <script src="i18n.js"></script>
   <script src="cipher.js"></script>
   <script src="script.js"></script>
 </body>
