@@ -56,3 +56,12 @@ test('all relative README image references exist', () => {
     assert.ok(fs.existsSync(path.join(repositoryRoot, reference)), `missing README image: ${reference}`);
   }
 });
+
+test('ユースケースの「このツールならではの使い方」を cipher.js で再計算（日英）', () => {
+  assert.equal(caesarShift('HELLO', 3), 'KHOOR');
+  assert.equal(caesarShift('HELLO', 26), 'HELLO');
+  assert.equal(caesarShift(caesarShift('HELLO', 13), 13), 'HELLO');
+  assert.equal(caesarShift(caesarShift('HELLO', 3), 3, { decrypt: true }), 'HELLO');
+  const en = fs.readFileSync(path.join(repositoryRoot, 'README.en.md'), 'utf8');
+  for (const md of [readme, en]) assert.ok(md.includes('KHOOR') && md.includes('26') && md.includes('13'));
+});

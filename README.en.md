@@ -135,6 +135,20 @@ The tests cover the cipher itself, the examples in this README, the image refere
 
 ---
 
+## 🎯 Use cases
+
+### Ways of using this tool in particular
+
+- Confirming the modular arithmetic where a full turn returns to the start (math and clock classes): encrypting HELLO with a shift of 3 gives KHOOR, and a shift of 26 returns HELLO. Turning the wheel once around (26) comes back to the start, the same modular arithmetic as the 12 hours of a clock. You can confirm, by turning the wheel, that a shift beyond 26 is decided by the remainder when divided by 26
+- Confirming that only a shift of 13 makes encryption and decryption the same (ROT13 and involution classes): encrypting text with a shift of 13 and then encrypting it again with a shift of 13 returns the original, because 13 twice is 26 and comes around once. You can confirm that 13 is the only shift that is its own inverse (ROT13)
+- Confirming that encryption and decryption turn opposite ways (the basics of the cipher): text encrypted with a shift of 3 returns with a shift of 3 in decrypt mode (the opposite way). Turning the wheel right 3 is undone by turning left 3. You can confirm, by the rotation, that encryption and decryption go in opposite directions
+
+### General uses
+
+- Learn how a Caesar cipher works in class or self-study while turning the wheel
+- Make a simple cipher keyed by the shift amount for puzzles and games
+- Exchange cipher letters with children as play (not for protecting secrets)
+
 ## 🔒 Privacy
 
 Nothing is sent anywhere, and nothing you type is stored. The only things kept in `localStorage` are your theme and language. The page carries a Content Security Policy and a `no-referrer` referrer policy.
